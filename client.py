@@ -12,14 +12,30 @@ class Client():
             timestamp = str(int(time.time()))
         try:
             with socket.create_connection((self.host, self.port)) as sock:
-                sock.sendall()
+                sock.sendall(f"{metrics_name} {value} {timestamp} \n".encode('utf8'))
         except:
             raise ClientError
-        pass
+        
 
     def get(self, metrics_name):
-        pass
+        try:
+            with socket.create_connection((self.host, self.port)) as sock:
+                data = sock.recv(1024)
+                # data.decode('utf8')
+                # data = data.split(" ")
+                # for item in data:
+                    # if item[]
+                # print(data.decode('utf8'))
+        except:
+            raise ClientError
 
 
 class ClientError(Exception):
     pass
+
+
+client = Client("127.0.0.1", 10001)
+client.put("asd", 3)
+client.put("qwe", 4)
+client.put("zxc", 5)
+client.get("asd")
