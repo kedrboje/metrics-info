@@ -21,7 +21,7 @@ class Client():
                 raise ClientError
             if data == "error\nwrong command\n\n":
                 raise ClientError
-            if data == "ok\n":
+            if data == "ok\n\n":
                 pass
             self.sck.close()
         except:
@@ -32,9 +32,22 @@ class Client():
 
         self.sck.connect((self.host, self.port))
         data = self.sck.recv(1024).decode('utf8')
-        udata = data.split(" ")
+
+        if data == "ok\n\n":
+            raise ClientError
+
+        fdata = data.split("\n")[1:-2]
+        rdata = []
+        udata = []
         result = {}
         start = 0
+
+        for item in fdata:
+            new_item = item.split(" ")
+            rdata.append(new_item)
+
+        for i in rdata:
+            udata += i
 
         def by_timestamp(stamp):
             return stamp[1]
