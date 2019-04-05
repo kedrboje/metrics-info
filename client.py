@@ -7,7 +7,6 @@ class Client():
         self.port = port
         self.timeout = timeout
         self.sck = socket.socket()
-        # self.sck.connect((self.host, self.port))
         self.sck.settimeout(self.timeout)
 
     def put(self, metrics_name, value, timestamp=None):
@@ -15,7 +14,7 @@ class Client():
             timestamp = str(int(time.time()))
         try:
             self.sck.connect((self.host, self.port))
-            self.sck.sendall(f"{metrics_name} {value} {timestamp}\n".encode('utf8'))
+            self.sck.sendall(f"put {metrics_name} {value} {timestamp}\n".encode('utf8'))
             data = self.sck.recv(1024).decode('utf8')
             if not data:
                 raise ClientError
@@ -31,6 +30,8 @@ class Client():
     def get(self, metrics_name):
 
         self.sck.connect((self.host, self.port))
+        self.sck.sendall(f"get {metrics_name}\n".encode('utf8'))
+
         data = self.sck.recv(1024).decode('utf8')
 
         if data == "ok\n\n":
@@ -49,12 +50,12 @@ class Client():
         for i in rdata:
             udata += i
 
-        def by_timestamp(stamp):
-            return stamp[1]
+        # def by_timestamp(m_timestamp):
+        #     return m_timestamp[1]
 
         for _ in udata:
 
-            if start > len(udata) - 1 :
+            if start > len(udata) - 3 :
                 break
 
             m_name = udata[start]
@@ -63,13 +64,18 @@ class Client():
             start += 3
 
             if not m_name in result:
-                result[m_name] = [(float(m_val), int(m_timestamp))]
+                result[m_name] = [(int(m_timestamp), float(m_val))]
             else:
-                result[m_name].append((float(m_val), int(m_timestamp)))
-                result[m_name].sort(key=by_timestamp)
+                result[m_name].append((int(m_timestamp), (float(m_val))))
+
+        sorted_result = {}
+
+        for key in result:
+            tmp_result = sorted(result[key], key=lambda x: x[0])
+            sorted_result[key] = tmp_result
 
         if metrics_name is "*":
-            return result
+            return sorted_result
         elif metrics_name in result:
             return {
                 str(metrics_name): result[str(metrics_name)]
