@@ -15,8 +15,14 @@ class Client():
             timestamp = str(int(time.time()))
         try:
             self.sck.connect((self.host, self.port))
-            self.sck.send(f"{metrics_name} {value} {timestamp} \n".encode(utf8))
-            time.sleep(1)
+            self.sck.sendall(f"{metrics_name} {value} {timestamp}\n".encode('utf8'))
+            data = self.sck.recv(1024).decode('utf8')
+            if not data:
+                raise ClientError
+            if data == "error\nwrong command\n\n":
+                raise ClientError
+            if data == "ok\n":
+                pass
             self.sck.close()
         except:
             raise ClientError
