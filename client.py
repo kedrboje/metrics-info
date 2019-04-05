@@ -6,36 +6,29 @@ class Client():
         self.host = host
         self.port = port
         self.timeout = timeout
+        self.sck = socket.socket()
+        # self.sck.connect((self.host, self.port))
+        self.sck.settimeout(self.timeout)
 
     def put(self, metrics_name, value, timestamp=None):
         if timestamp == None:
             timestamp = str(int(time.time()))
         try:
-            with socket.create_connection((self.host, self.port)) as sock:
-                sock.sendall(f"{metrics_name} {value} {timestamp} \n".encode('utf8'))
+            self.sck.connect((self.host, self.port))
+            self.sck.send(f"{metrics_name} {value} {timestamp} \n".encode(utf8))
+            self.sck.close()
         except:
             raise ClientError
         
 
     def get(self, metrics_name):
-        try:
-            with socket.create_connection((self.host, self.port)) as sock:
-                data = sock.recv(1024)
-                # data.decode('utf8')
-                # data = data.split(" ")
-                # for item in data:
-                    # if item[]
-                # print(data.decode('utf8'))
-        except:
-            raise ClientError
+        self.sck.connect((self.host, self.port))
+        data = self.sck.recv(1024).decode('utf8')
+        udata = data.split(" ")
+        pass
+        self.sck.close()
 
 
 class ClientError(Exception):
     pass
 
-
-client = Client("127.0.0.1", 10001)
-client.put("asd", 3)
-client.put("qwe", 4)
-client.put("zxc", 5)
-client.get("asd")
