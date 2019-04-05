@@ -35,7 +35,7 @@ class Client():
         data = self.sck.recv(1024).decode('utf8')
 
         if data == "ok\n\n":
-            raise ClientError
+            return {}
 
         fdata = data.split("\n")[1:-2]
         rdata = []
@@ -74,14 +74,14 @@ class Client():
             tmp_result = sorted(result[key], key=lambda x: x[0])
             sorted_result[key] = tmp_result
 
-        if metrics_name is "*":
+        if metrics_name == "*":
             return sorted_result
-        elif metrics_name in result:
+        if metrics_name in result:
             return {
                 str(metrics_name): result[str(metrics_name)]
             }
         else:
-            return {}
+            raise ClientError
         self.sck.close()
 
 
