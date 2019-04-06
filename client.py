@@ -1,6 +1,7 @@
 import socket
 import time
 
+
 class Client():
     def __init__(self, host, port, timeout=None):
         self.host = host
@@ -10,7 +11,7 @@ class Client():
         self.sck.settimeout(self.timeout)
 
     def put(self, metrics_name, value, timestamp=None):
-        if timestamp == None:
+        if timestamp is None:
             timestamp = str(int(time.time()))
         try:
             self.sck.connect((self.host, self.port))
@@ -25,10 +26,8 @@ class Client():
             self.sck.close()
         except:
             raise ClientError
-        
 
     def get(self, metrics_name):
-
         self.sck.connect((self.host, self.port))
         self.sck.sendall(f"get {metrics_name}\n".encode('utf8'))
 
