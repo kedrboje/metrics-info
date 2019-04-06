@@ -7,14 +7,13 @@ class Client():
         self.host = host
         self.port = port
         self.timeout = timeout
-        self.sck = socket.socket()
-        self.sck.settimeout(self.timeout)
+        self.sck = socket.create_connection((self.host, self.port), self.timeout)
 
     def put(self, metrics_name, value, timestamp=None):
         if timestamp is None:
             timestamp = str(int(time.time()))
 
-        self.sck.connect((self.host, self.port))
+        # self.sck.connect((self.host, self.port))
         self.sck.sendall(f"put {metrics_name} {value} {timestamp}\n".encode('utf8'))
         data = self.sck.recv(1024).decode('utf8')
 
@@ -28,7 +27,7 @@ class Client():
 
 
     def get(self, metrics_name):
-        self.sck.connect((self.host, self.port))
+        # self.sck.connect((self.host, self.port))
         self.sck.sendall(f"get {metrics_name}\n".encode('utf8'))
 
         data = self.sck.recv(1024).decode('utf8')
