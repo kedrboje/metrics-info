@@ -13,19 +13,19 @@ class Client():
     def put(self, metrics_name, value, timestamp=None):
         if timestamp is None:
             timestamp = str(int(time.time()))
-        try:
-            self.sck.connect((self.host, self.port))
-            self.sck.sendall(f"put {metrics_name} {value} {timestamp}\n".encode('utf8'))
-            data = self.sck.recv(1024).decode('utf8')
-            if not data:
-                raise ClientError
-            if data == "error\nwrong command\n\n":
-                raise ClientError
-            if data == "ok\n\n":
-                pass
-            self.sck.close()
-        except:
+
+        self.sck.connect((self.host, self.port))
+        self.sck.sendall(f"put {metrics_name} {value} {timestamp}\n".encode('utf8'))
+        data = self.sck.recv(1024).decode('utf8')
+
+        if data == "error\nwrong command\n\n":
             raise ClientError
+
+        if data == "ok\n\n":
+            pass
+
+        self.sck.close()
+
 
     def get(self, metrics_name):
         self.sck.connect((self.host, self.port))
@@ -48,9 +48,6 @@ class Client():
 
         for i in rdata:
             udata += i
-
-        # def by_timestamp(m_timestamp):
-        #     return m_timestamp[1]
 
         for _ in udata:
 
