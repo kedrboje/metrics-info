@@ -23,7 +23,7 @@ class Client():
         if data == "ok\n\n":
             pass
 
-        self.sck.close()
+        # self.sck.close()
 
 
     def get(self, metrics_name):
@@ -77,7 +77,7 @@ class Client():
             }
         else:
             raise ClientError
-        self.sck.close()
+        # self.sck.close()
 
 
 class ClientError(Exception):
