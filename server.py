@@ -14,15 +14,15 @@ def run_server(host, port):
         if message[:3] == 'put':
             data = message[:-1].split(' ')[1:]
             if data[0] not in local_data:
-                local_data[data[0]] = [(data[1], data[2])]
+                local_data[data[0]] = [(int(data[2]), float(data[1]))]
             else:
-                local_data[data[0]].append((data[1], data[2]))
+                local_data[data[0]].append((int(data[2]), float(data[1])))
             writer.write(b'ok\n\n')
             await writer.drain() 
         elif message[:3] == 'get':
             key = message.split(" ")[1]
             for item in local_data:
-                tmp_list = sorted(local_data[item], key=lambda x: x[1])
+                tmp_list = sorted(local_data[item], key=lambda x: x[0])
                 sorted_data[item] = tmp_list
             print(sorted_data)
             if key == "*":
