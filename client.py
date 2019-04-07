@@ -16,7 +16,7 @@ class Client():
         # self.sck.connect((self.host, self.port))
         self.sck.sendall(f"put {metrics_name} {value} {timestamp}\n".encode('utf8'))
         data = self.sck.recv(1024).decode('utf8')
-
+        print(data)
         if data == "error\nwrong command\n\n":
             raise ClientError
 
@@ -31,7 +31,7 @@ class Client():
         self.sck.sendall(f"get {metrics_name}\n".encode('utf8'))
 
         data = self.sck.recv(1024).decode('utf8')
-
+        print(data)
         if data == "ok\n\n":
             return {}
 
@@ -90,6 +90,6 @@ class ClientError(Exception):
 
 # client_two.put("m_two", 2)
 
-client_three = Client("127.0.0.1", 8181)
+# client_three = Client("127.0.0.1", 8181)
 
-client_three.put("m_three", 3)
+# client_three.put("m_three", 3)
