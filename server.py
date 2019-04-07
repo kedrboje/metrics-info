@@ -3,24 +3,22 @@ import asyncio
 
 def run_server(host, port):
 
+    data = {}
 
-    class ClientServerProtocol(asyncio.Protocol):
+    pass
 
-        def connection_made(self, transport):
-            self.transport = transport
+    async def handle_echo(reader, writer):
+        tmp_data = await reader.read(1024)
+        await asyncio.sleep(1)
+        message = tmp_data.decode()
+        print(message)
 
-        def data_received(self, data):
-            resp = data.decode()
-            self.transport.write(resp.encode())
-            print(resp)
+        writer.write(b'ok\n\n')
+        await writer.drain()     
+        writer.close()
 
     loop = asyncio.get_event_loop()
-
-    coro = loop.create_server(
-        ClientServerProtocol,
-        host, port
-    )
-
+    coro = asyncio.start_server(handle_echo, host=host, port=port, loop=loop)
     server = loop.run_until_complete(coro)
 
     try:
