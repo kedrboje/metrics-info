@@ -83,3 +83,13 @@ class Client():
 class ClientError(Exception):
     pass
 
+# client_one = Client("127.0.0.1", 8181)
+# client_two = Client("127.0.0.1", 8181)
+
+# client_one.put("m_one", 1)
+
+# client_two.put("m_two", 2)
+
+client_three = Client("127.0.0.1", 8181)
+
+client_three.put("m_three", 3)
