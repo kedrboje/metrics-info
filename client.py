@@ -83,12 +83,13 @@ class Client():
 class ClientError(Exception):
     pass
 
-client_one = Client("127.0.0.1", 8181)
-client_two = Client("127.0.0.1", 8181)
-client_three = Client("127.0.0.1", 8181)
-client_four = Client('127.0.0.1', 8181)
+client_one = Client("127.0.0.1", 8181, timeout=5)
+client_two = Client("127.0.0.1", 8181, timeout=5)
+# client_three = Client("127.0.0.1", 8181)
+# client_four = Client('127.0.0.1', 8181)
+# client_five = Client('127.0.0.1', 8181)
 
 client_one.put("m_one", 1, 6)
 client_two.put("m_one", 2, 2)
-client_three.put("m_one", 3, 3)
-client_four.get('*')
+client_two.put("m_one", 3, 3)
+client_one.get('*')
