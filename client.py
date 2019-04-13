@@ -70,6 +70,7 @@ class Client():
             sorted_result[key] = tmp_result
 
         if metrics_name == "*":
+            # print(sorted_result)
             return sorted_result
         if metrics_name in result:
             return {
@@ -92,4 +93,4 @@ client_two = Client("127.0.0.1", 8181, timeout=5)
 client_one.put("m_one", 1, 6)
 client_two.put("m_one", 2, 2)
 client_one.put("m_one", 3, 3)
-client_two.get('*')
+client_two.get("*")
