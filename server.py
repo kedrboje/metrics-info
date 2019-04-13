@@ -9,39 +9,76 @@ def run_server(host, port):
     async def handle_echo(reader, writer):
         while True:
             tmp_data = await reader.readline()
+            message = tmp_data.decode('utf8')
             await asyncio.sleep(1) # may be deleted
-            if tmp_data:
-                message = tmp_data.decode('utf8')
+
+            if message:
                 print(message)
                 if message[:3] == 'put':
-                    data = message[:-1].split(' ')[1:]
-                    if data[0] not in local_data:
-                        local_data[data[0]] = [(int(data[2]), float(data[1]))]
+
+                    data = message[:-1].split(' ')[1:] # delete put and \n
+                    m_name = data[0]
+                    m_val = data[1]
+                    m_timestamp = data[2]
+                    
+                    if m_name not in local_data:
+                        local_data[m_name] = [(float(m_val), int(m_timestamp))]
+                    elif (m_val, m_timestamp) in local_data[m_name]:
+                        pass
                     else:
-                        local_data[data[0]].append((int(data[2]), float(data[1])))
+                        local_data[m_name].append((float(m_val), int(m_timestamp)))
+
                     writer.write(b'ok\n\n')
                     await writer.drain()
+
                 elif message[:3] == 'get':
-                    key = message.split(" ")[1]
-                    print(key)
+
+                    key = message[:-1].split(" ")[1]
+
                     for item in local_data:
-                        tmp_list = sorted(local_data[item], key=lambda x: x[0])
+                        tmp_list = sorted(local_data[item], key=lambda x: x[1])
                         sorted_data[item] = tmp_list
+
                     print(sorted_data)
-                    if key == "*":
-                        writer.write(b'da\n')
+
+                    if key is "*":
+
+                        string = "ok"
+                        count = 0
+                        
+                        for k in sorted_data:
+
+                            string = string + "\n" + str(k)
+
+                            for tuple_s in sorted_data[k]:
+                                for item in tuple_s:
+                                    count += 1
+                                    if count <= 2:
+                                        string += " " + str(item)
+                                    else:
+                                        count = 1
+                                        string += "\n" + str(k) + " " + str(item)
+                            count = 0
+                        string += "\n\n"
+                        print(string)
+                        writer.write(string.encode('utf8'))
+                        await writer.drain()
+
                     elif key in local_data:
-                        pass
+
+                        writer.write(f"ok\n{key} \n\n".encode('utf8'))
+                        await writer.drain()
                     else:
+
                         writer.write(b'ok\n\n')
                         await writer.drain() 
-                        pass
                 else:
                     writer.write(b'error\nwrong command\n\n')
-                await writer.drain() 
+                    await writer.drain() 
             else:
-                print('no data')
                 break
+                print('no data')
+
         writer.close()
         # print(local_data) # should be deleted
 
