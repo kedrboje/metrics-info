@@ -23,11 +23,11 @@ def run_server(host, port):
                     
                     if m_name not in local_data:
                         local_data[m_name] = [(float(m_val), int(m_timestamp))]
-                    elif (m_val, m_timestamp) in local_data[m_name]:
-                        pass
                     else:
-                        local_data[m_name].append((float(m_val), int(m_timestamp)))
-
+                        if (float(m_val), int(m_timestamp)) not in local_data[m_name]:
+                            local_data[m_name].append((float(m_val), int(m_timestamp)))
+                        else:
+                            pass
                     writer.write(b'ok\n\n')
                     await writer.drain()
 
@@ -45,7 +45,7 @@ def run_server(host, port):
 
                         string = "ok"
                         count = 0
-                        
+
                         for k in sorted_data:
 
                             string = string + "\n" + str(k)
@@ -59,6 +59,7 @@ def run_server(host, port):
                                         count = 1
                                         string += "\n" + str(k) + " " + str(item)
                             count = 0
+
                         string += "\n\n"
                         print(string)
                         writer.write(string.encode('utf8'))
@@ -77,7 +78,6 @@ def run_server(host, port):
                     await writer.drain() 
             else:
                 break
-                print('no data')
 
         writer.close()
         # print(local_data) # should be deleted
